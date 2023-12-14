@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">AnimeApp</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_favorite">Favorite</string>
+    <string name="menu_profile">Profile</string>
+    <string name="title_activity_profile_screen">ProfileScreen</string>
+</resources>
