@@ -40,7 +40,6 @@ import com.ophi.animeapp.ui.ViewModelFactory
 
 @Composable
 fun DetailScreen(
-    animeId: Int,
     viewModel: DetailViewModel = viewModel(
         factory = ViewModelFactory(
             Injection.provideRepository()
@@ -116,25 +115,35 @@ fun DetailContent(
             }
             Row{
                 Text(
-                    text = "Genre : ",
+                    text = "Genre",
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(start = 16.dp)
                 )
                 Text(
+                    text = ":",
+                    modifier = Modifier.padding(start = 18.dp)
+                )
+                Text(
                     text = genre.joinToString(", "),
-                    maxLines = 2
+                    maxLines = 2,
+                    modifier = Modifier.padding(start = 8.dp)
                 )
             }
             Row{
                 Text(
-                    text = "Release : ",
+                    text = "Release",
                     textAlign = TextAlign.Start,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(start = 16.dp)
                 )
                 Text(
+                    text = ":",
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+                Text(
                     text = release,
                     textAlign = TextAlign.Left,
+                    modifier = Modifier.padding(start = 8.dp)
                 )
             }
         }

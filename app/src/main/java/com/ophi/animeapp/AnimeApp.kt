@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -25,9 +26,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.ophi.animeapp.di.Injection
+import com.ophi.animeapp.ui.ViewModelFactory
 import com.ophi.animeapp.ui.navigation.NavigationItem
 import com.ophi.animeapp.ui.navigation.Screen
 import com.ophi.animeapp.ui.screen.detail.DetailScreen
+import com.ophi.animeapp.ui.screen.detail.DetailViewModel
 import com.ophi.animeapp.ui.screen.favorite.FavoriteScreen
 import com.ophi.animeapp.ui.screen.home.HomeScreen
 import com.ophi.animeapp.ui.screen.profile.ProfileScreen
@@ -41,6 +45,10 @@ fun AnimeApp(
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+
+    val repository = Injection.provideRepository()
+    val detailViewModel: DetailViewModel = viewModel(
+        factory = ViewModelFactory(repository))
 
     Scaffold(
         bottomBar = {
@@ -72,13 +80,11 @@ fun AnimeApp(
                 route = Screen.Detail.route,
                 arguments = listOf(navArgument("animeId") { type = NavType.IntType })
             ) {
-                val id = it.arguments?.getInt("animeId") ?: -1
-                DetailScreen(
-                    animeId = id,
-                    navigateBack = {
-                        navController.navigateUp()
-                    },
-                )
+                detailViewModel.getAnimeById(it.arguments?.getInt("animeId") ?: -1 )
+                DetailScreen(viewModel = detailViewModel) {
+
+                }
+
             }
         }
     }
