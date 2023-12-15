@@ -1,5 +1,6 @@
 package com.ophi.animeapp.ui.screen.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -23,42 +24,41 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel(
         factory = ViewModelFactory(Injection.provideRepository())
-    )
+    ),
+    navigateToDetail: (id: Int) -> Unit
 ) {
     val anime by viewModel.anime.collectAsState()
     
     HomeContent(
         anime = anime,
-        modifier = modifier
+        modifier = modifier,
+        navigateToDetail = navigateToDetail
     )
 }
 
 @Composable
 fun HomeContent(
     anime: List<Anime>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navigateToDetail: (id: Int) -> Unit
 ) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(160.dp),
         contentPadding = PaddingValues(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = modifier
+        modifier = modifier,
+
     ) {
         items(anime) { data ->
             AnimeCard(
                 image = data.image,
                 title = data.title,
-                genre = data.genre
+                genre = data.genre,
+                modifier = Modifier.clickable {
+                    navigateToDetail(data.id)
+                }
             )
         }
-    }
-}
-
-@Composable
-@Preview(showBackground = true)
-fun HomeScreenPreview() {
-    AnimeAppTheme {
-        HomeScreen()
     }
 }

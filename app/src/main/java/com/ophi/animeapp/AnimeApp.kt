@@ -19,12 +19,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.ophi.animeapp.ui.navigation.NavigationItem
 import com.ophi.animeapp.ui.navigation.Screen
+import com.ophi.animeapp.ui.screen.detail.DetailScreen
 import com.ophi.animeapp.ui.screen.favorite.FavoriteScreen
 import com.ophi.animeapp.ui.screen.home.HomeScreen
 import com.ophi.animeapp.ui.screen.profile.ProfileScreen
@@ -41,7 +44,9 @@ fun AnimeApp(
 
     Scaffold(
         bottomBar = {
-            BottomBar(navController)
+            if (currentRoute != Screen.Detail.route) {
+                BottomBar(navController)
+            }
         },
         modifier = modifier
     ) { innerPadding ->
@@ -51,13 +56,29 @@ fun AnimeApp(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(Screen.Home.route) {
-                HomeScreen()
+                HomeScreen(
+                    navigateToDetail = { animeId ->
+                        navController.navigate(Screen.Detail.createRoute(animeId))
+                    }
+                )
             }
             composable(Screen.Favorite.route) {
                 FavoriteScreen()
             }
             composable(Screen.Profile.route) {
                 ProfileScreen()
+            }
+            composable(
+                route = Screen.Detail.route,
+                arguments = listOf(navArgument("animeId") { type = NavType.IntType })
+            ) {
+                val id = it.arguments?.getInt("animeId") ?: -1
+                DetailScreen(
+                    animeId = id,
+                    navigateBack = {
+                        navController.navigateUp()
+                    },
+                )
             }
         }
     }
