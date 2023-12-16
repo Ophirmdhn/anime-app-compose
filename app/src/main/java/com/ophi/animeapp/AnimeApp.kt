@@ -6,13 +6,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -33,6 +36,7 @@ import com.ophi.animeapp.ui.navigation.Screen
 import com.ophi.animeapp.ui.screen.detail.DetailScreen
 import com.ophi.animeapp.ui.screen.detail.DetailViewModel
 import com.ophi.animeapp.ui.screen.favorite.FavoriteScreen
+import com.ophi.animeapp.ui.screen.favorite.FavoriteViewModel
 import com.ophi.animeapp.ui.screen.home.HomeScreen
 import com.ophi.animeapp.ui.screen.profile.ProfileScreen
 import com.ophi.animeapp.ui.theme.AnimeAppTheme
@@ -48,7 +52,12 @@ fun AnimeApp(
 
     val repository = Injection.provideRepository()
     val detailViewModel: DetailViewModel = viewModel(
-        factory = ViewModelFactory(repository))
+        factory = ViewModelFactory(repository)
+    )
+
+    val favoriteViewModel: FavoriteViewModel = viewModel(
+        factory = ViewModelFactory(repository)
+    )
 
     Scaffold(
         bottomBar = {
@@ -56,8 +65,26 @@ fun AnimeApp(
                 BottomBar(navController)
             }
         },
+        floatingActionButton = {
+            if (currentRoute == Screen.Detail.route) {
+                detailViewModel.anime.collectAsState().value.let { it?.let { anime ->
+                    FloatingActionButton(onClick = {
+                        detailViewModel.setFavorite(anime.id, !anime.isFavorite)
+                    }) {
+                        Icon(
+                            imageVector = if (anime.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = stringResource(R.string.add_to_favorite)
+                        )
+                    }
+                } }
+            }
+        },
         modifier = modifier
     ) { innerPadding ->
+        val navigateToDetail = { id: Int ->
+            navController.navigate(Screen.Detail.createRoute(id))
+        }
+
         NavHost(
             navController = navController,
             startDestination = Screen.Home.route,
@@ -65,13 +92,15 @@ fun AnimeApp(
         ) {
             composable(Screen.Home.route) {
                 HomeScreen(
-                    navigateToDetail = { animeId ->
-                        navController.navigate(Screen.Detail.createRoute(animeId))
-                    }
+                    navigateToDetail = navigateToDetail
                 )
             }
             composable(Screen.Favorite.route) {
-                FavoriteScreen()
+                favoriteViewModel.getFavorite()
+                FavoriteScreen(
+                    navigateToDetail = navigateToDetail,
+                    viewModel = favoriteViewModel
+                )
             }
             composable(Screen.Profile.route) {
                 ProfileScreen()
@@ -81,10 +110,7 @@ fun AnimeApp(
                 arguments = listOf(navArgument("animeId") { type = NavType.IntType })
             ) {
                 detailViewModel.getAnimeById(it.arguments?.getInt("animeId") ?: -1 )
-                DetailScreen(viewModel = detailViewModel) {
-
-                }
-
+                DetailScreen(viewModel = detailViewModel) {}
             }
         }
     }

@@ -16,7 +16,15 @@ class AnimeRepository {
     }
 
     fun getAllAnime(): List<Anime> = anime
+
     fun getAnimeById(id: Int): Anime = anime.first { it.id == id }
+
+    fun setFavorite(id: Int, value: Boolean) {
+        val index = anime.indexOfFirst { it.id == id }
+        anime[index] = anime[index].copy(isFavorite = value)
+    }
+
+    fun getFavorite(): List<Anime> = anime.filter { it.isFavorite }
 
     companion object {
         @Volatile

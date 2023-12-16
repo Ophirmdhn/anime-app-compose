@@ -126,7 +126,7 @@ fun DetailContent(
                 Text(
                     text = genre.joinToString(", "),
                     maxLines = 2,
-                    modifier = Modifier.padding(start = 8.dp)
+                    modifier = Modifier.padding(start = 8.dp, bottom = 8.dp)
                 )
             }
             Row{
@@ -143,7 +143,7 @@ fun DetailContent(
                 Text(
                     text = release,
                     textAlign = TextAlign.Left,
-                    modifier = Modifier.padding(start = 8.dp)
+                    modifier = Modifier.padding(start = 8.dp, bottom = 16.dp)
                 )
             }
         }

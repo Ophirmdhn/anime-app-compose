@@ -13,4 +13,9 @@ class DetailViewModel(private val repository: AnimeRepository): ViewModel() {
     fun getAnimeById(id: Int) {
         _anime.value = repository.getAnimeById(id)
     }
+
+    fun setFavorite(id: Int, value: Boolean){
+        repository.setFavorite(id, value)
+        _anime.value = _anime.value?.copy(isFavorite = value)
+    }
 }
